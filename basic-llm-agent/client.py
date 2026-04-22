@@ -3,6 +3,7 @@ from openai import OpenAI
 from schema import tools
 from tools import TOOLS_MAP
 import os
+import json
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -17,26 +18,42 @@ def run_agent(user_input):
                         input=messages,
                         tools=tools,
                 )
-        if response.output[0].type == "tool_call":
-            tool_call = response.output[0].tool_calls[0]
-            tool_name = tool_call.name
-            tool_args = tool_call.arguments
+        output_item = response.output[0]
+        
+        # Check if this is a tool call by checking the type name or attributes
+        if type(output_item).__name__ == 'ResponseFunctionToolCall' or hasattr(output_item, 'name'):
+            tool_name = output_item.name
+            call_id = output_item.call_id
+            # Parse tool arguments if they're a JSON string
+            if isinstance(output_item.arguments, str):
+                tool_args = json.loads(output_item.arguments)
+                arguments_str = output_item.arguments
+            else:
+                tool_args = output_item.arguments
+                arguments_str = json.dumps(tool_args)
             print(f"[INFO] Tool call: {tool_name} with args {tool_args}")
             result = TOOLS_MAP[tool_name](**tool_args)
 
             messages.append({
-                "type":"tool_call",
+                "type":"function_call",
                 "name": tool_name,
-                "arguments": tool_args
+                "arguments": arguments_str,
+                "call_id": call_id
             })
 
             messages.append({
-                "type":"tool_result",
+                "type":"function_call_output",
                 "name": tool_name,
-                "content": result
+                "output": str(result),
+                "call_id": call_id
             })
         else:
-            #final answer from the agent
-            return response.output[0].content[0].text
+            # final answer from the agent
+            if hasattr(output_item, 'content') and output_item.content:
+                return output_item.content[0].text
+            elif hasattr(output_item, 'text'):
+                return output_item.text
+            else:
+                return str(output_item)
 
         
