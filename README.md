@@ -75,6 +75,39 @@ Enter text: John Doe is a software engineer with 5 years of experience in Python
 }
 ```
 
+### 4. Resume Analyzer API
+A FastAPI backend that analyzes resume text against a job description and returns structured resume insights, job requirement extraction, comparison notes, and a match score.
+
+**Features:**
+- LLM-powered resume and job description analysis
+- Structured output for skills, experience, education, and recommendations
+- Comparison of matched vs missing skills
+- Score breakdown for required skills, optional skills, experience, and domain fit
+- Built with FastAPI and Pydantic for schema validation
+
+**Usage:**
+```bash
+cd resume-analyzer-api
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**API Endpoint:**
+- `POST /api/analyze`
+
+**Request Body:**
+```json
+{
+  "resume_text": "<full resume text>",
+  "job_description": "<job description text>"
+}
+```
+
+**Response Includes:**
+- `resume`: extracted candidate details and skills
+- `job_requirements`: required and optional skills plus role/domain keywords
+- `comparison`: matched vs missing skills and recommendation notes
+- `score`: numeric breakdown and final fit score
+
 ## 🚀 Setup
 
 ### Prerequisites
@@ -109,7 +142,7 @@ pip install -r requirements.txt
 Create a `.env` file in the root directory:
 ```
 OPENAI_API_KEY=your_api_key_here
-MODEL=gpt-4
+MODEL=gpt-4o-mini
 ```
 
 ## 📦 Dependencies
@@ -118,6 +151,9 @@ MODEL=gpt-4
 - `python-dotenv==1.2.2` - Environment variable management
 - `requests==2.33.1` - HTTP library for API calls
 - `openmeteo_requests==1.7.5` - Weather API requests
+- `fastapi` - Web API framework for the resume analyzer
+- `uvicorn` - ASGI server for running FastAPI apps
+- `pydantic-settings` - Environment-backed settings management for FastAPI
 
 ## 🏗️ Architecture
 
@@ -146,7 +182,7 @@ Output to User
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `OPENAI_API_KEY` | Your OpenAI API key | `sk-...` |
-| `MODEL` | Model to use for API calls | `gpt-4` or `gpt-4-turbo` |
+| `MODEL` | Model to use for API calls | `gpt-4`, `gpt-4o-mini`, or `gpt-4-turbo` |
 
 ## 📚 Learning Concepts
 
