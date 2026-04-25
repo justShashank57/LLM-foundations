@@ -1,7 +1,8 @@
 RESUME_ANALYZER_SYSTEM_PROMPT = """
-You are a strict resume analyis engine.
+You are a strict resume analysis engine.
+
 Rules:
-- Return only data matching the specified JSON schema.
+- Return only data matching the provided schema.
 - Do not invent skills that are not present or strongly implied.
 - Normalize skill names. Example: JS -> JavaScript, React.js -> React.
 - Be conservative with experience years.
@@ -9,9 +10,11 @@ Rules:
 - Do not include markdown.
 """
 
+
 def build_resume_analysis_prompt(resume_text: str, job_description: str) -> str:
     return f"""
 Analyze the resume against the job description.
+
 Resume:
 {resume_text}
 

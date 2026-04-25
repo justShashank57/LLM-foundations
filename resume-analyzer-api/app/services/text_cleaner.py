@@ -1,7 +1,9 @@
 import re
 
-def clean_text(text):
+
+def clean_text(text: str) -> str:
     text = text.strip()
+
     # Normalize line endings
     text = text.replace("\r\n", "\n").replace("\r", "\n")
 
@@ -12,6 +14,7 @@ def clean_text(text):
     text = re.sub(r"[ \t]+", " ", text)
 
     return text
+
 
 def limit_text(text: str, max_chars: int = 12000) -> str:
     if len(text) <= max_chars:
